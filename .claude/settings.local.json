@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.youtube.com)",
+      "WebFetch(domain:youtubetranscript.com)",
+      "WebSearch",
+      "WebFetch(domain:www.shrm.org)",
+      "WebFetch(domain:hbr.org)",
+      "WebFetch(domain:www.linkedin.com)",
+      "WebFetch(domain:www.bls.gov)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.reddit.com)",
+      "WebFetch(domain:news.ycombinator.com)",
+      "Bash(mkdir -p C:/develop/Repos/AITeamBlueprint/data)",
+      "Bash(sqlite3 C:/develop/Repos/AITeamBlueprint/data/audit.db ' *)",
+      "Bash(sqlite3 *)",
+      "Bash(claude --model claude-sonnet-4-6 -p \"You are Archie. Initialise the database if needed, then open a new task. Prompt summary: Write a marketing email for a new AI productivity tool aimed at small business owners. Files: OwnerInbox/prompt.md. Return the task_id.\" --allowedTools \"Bash,Read\")"
+    ]
+  }
+}
