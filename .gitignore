@@ -1,0 +1,4 @@
+# Working directories and files
+.claude/state/current-task.json
+# AgentOutbox/*
+!AgentOutbox/sample-agent-output.md
