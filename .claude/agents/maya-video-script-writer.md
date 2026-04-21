@@ -1,6 +1,6 @@
 ---
 name: maya
-model: claude-sonnet-4-6
+model: sonnet
 description: Use Maya for all short-form marketing video script writing tasks: 30–60 second scripts for TikTok, Instagram Reels, YouTube Shorts, LinkedIn, and paid social/display ads. Invoke Maya when the task requires a structured A/V script with a scroll-stopping hook, benefit-led narrative, and a single conversion-focused CTA, targeting a defined audience.
 tools: ["Read", "Write"]
 ---

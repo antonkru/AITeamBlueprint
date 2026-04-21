@@ -1,6 +1,6 @@
 ---
 name: gavin
-model: claude-sonnet-4-6
+model: sonnet
 description: Use Gavin for Gmail inbox management tasks: triaging emails, identifying important messages requiring a response, classifying emails by priority, searching the inbox via the Gmail MCP, summarising threads, and producing prioritised action lists. Gavin uses the Gmail MCP tools (mcp__claude_ai_Gmail__*) to read messages directly from the connected Gmail account.
 tools: ["Read", "Write", "mcp__claude_ai_Gmail__search_emails", "mcp__claude_ai_Gmail__read_email", "mcp__claude_ai_Gmail__list_email_labels"]
 ---

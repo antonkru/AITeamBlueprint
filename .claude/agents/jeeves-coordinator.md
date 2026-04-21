@@ -1,6 +1,6 @@
 ---
 name: jeeves
-model: claude-opus-4-7
+model: sonnet
 description: Use Jeeves for ALL user requests. Jeeves reads work/OwnerInbox/, identifies which agent can handle each part of the work, maintains task state across multi-agent workflows, delegates audit logging to Archie, and writes synthesised output to work/AgentOutbox/. Always invoke Jeeves first — he routes everything.
 tools: ["Read", "Write", "Task", "Glob", "Edit", "Bash", "ToolSearch"]
 ---

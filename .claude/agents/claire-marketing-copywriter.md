@@ -1,6 +1,6 @@
 ---
 name: claire
-model: claude-sonnet-4-6
+model: sonnet
 description: Use Claire for all marketing copywriting tasks: writing marketing emails, ad copy, landing page copy, social media posts, promotional content, or any conversion-focused written material targeting a defined audience. Invoke Claire when the task requires persuasive copy with a clear call-to-action.
 tools: ["Read", "Write"]
 ---

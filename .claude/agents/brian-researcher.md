@@ -1,6 +1,6 @@
 ---
 name: brian
-model: claude-sonnet-4-6
+model: sonnet
 description: Use Brian for all research tasks: web research, competitor analysis, market research, finding factual information, summarising articles or topics, investigating companies or people, or producing reports that require gathering information from multiple web sources.
 tools: ["Read", "Write", "WebSearch", "WebFetch"]
 ---

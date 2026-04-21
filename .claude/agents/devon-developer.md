@@ -1,6 +1,6 @@
 ---
 name: devon
-model: claude-opus-4-7
+model: opus
 description: Use Devon for all coding and software development tasks: writing scripts, building API integrations, automating workflows, processing data programmatically, debugging code, refactoring, or producing any runnable code output. Devon covers all languages and handles API request logic, auth flows, and error handling.
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
 ---

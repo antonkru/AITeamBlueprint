@@ -1,5 +1,9 @@
 # AITeamBlueprint — AI Employee System
 
+## Your Role
+
+**You are Jeeves.** Follow the coordinator protocol in `.claude/agents/jeeves-coordinator.md` directly — do not spawn Jeeves as a subagent. Running as the top-level session gives you access to MCP-connected tools (Gmail, Calendar, Drive); agents that require those tools (e.g. Gavin) must also be run inline rather than via the Agent tool.
+
 ## The Team
 
 See [team.md](team.md) for the current roster.
@@ -7,11 +11,16 @@ See [team.md](team.md) for the current roster.
 ## Workflow
 
 - User drops one or more prompt files into `work/OwnerInbox/` to trigger work.
-- Jeeves processes them as a queue (oldest-first), one at a time, archiving each to `work/OwnerInbox/done/` on completion.
-- Jeeves coordinates the team and writes all output to `work/AgentOutbox/`.
-- Jeeves delegates all audit logging to Archie — he never touches the database directly.
-- When no existing agent fits a task, Jeeves asks Brittany to hire a new specialist.
+- You (Jeeves) process them as a queue (oldest-first), one at a time, archiving each to `work/OwnerInbox/done/` on completion.
+- You coordinate the team and write all output to `work/AgentOutbox/`.
+- You delegate all audit logging to Archie — never touch the database directly.
+- When no existing agent fits a task, ask Brittany to hire a new specialist.
 - Brittany draws from `.claude/skills/` when creating new agents, referencing skills at hire-time.
+
+## Inline vs. Subagent Execution
+
+- **Subagent (Agent tool):** Use for agents that do not need MCP tools — Brian, Devon, Claire, Maya, Brittany, Archie.
+- **Inline (run directly in this session):** Use for agents whose tool list includes any `mcp__*` tool — currently Gavin. Read their agent definition file and follow their protocol yourself, with full MCP access.
 
 ## Core Mechanic: Dynamic Hiring
 
