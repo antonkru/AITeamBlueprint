@@ -10,4 +10,4 @@
 - Use markdown headings and bullet points throughout
 - Quantify claims where possible (numbers, percentages, dates)
 - Plain language — accessible without domain expertise
-- Filename convention: `AgentOutbox/[type]-[topic]-[YYYY-MM-DD].md`
+- Filename convention: `work/AgentOutbox/[type]-[topic]-[subject]-[YYYY-MM-DD].md` where `[subject]` is a short slug summarising the artifact's specific purpose (e.g. `competitor-landscape`, `q2-pricing-analysis`)

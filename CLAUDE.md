@@ -2,35 +2,34 @@
 
 ## The Team
 
-| Name     | Role          | Specialty                                               |
-|----------|---------------|---------------------------------------------------------|
-| Jeeves   | Coordinator   | Orchestrates, delegates, maintains state                |
-| Brittany | HR            | Hires new agents, embeds skills from Skills/            |
-| Brian    | Researcher    | Web research, reports, fact-finding                     |
-| Devon    | Developer     | Coding, API integrations, scripting, automation         |
-| Archie   | Audit Manager | Owns data/audit.db — logs all team interactions         |
-| ...      | (grows)       | New specialists hired by Brittany on demand             |
+See [team.md](team.md) for the current roster.
 
 ## Workflow
 
-- User places files and a `prompt.md` in `OwnerInbox/` to trigger work.
-- Jeeves reads the inbox, coordinates the team, and writes output to `AgentOutbox/`.
+- User drops one or more prompt files into `work/OwnerInbox/` to trigger work.
+- Jeeves processes them as a queue (oldest-first), one at a time, archiving each to `work/OwnerInbox/done/` on completion.
+- Jeeves coordinates the team and writes all output to `work/AgentOutbox/`.
 - Jeeves delegates all audit logging to Archie — he never touches the database directly.
 - When no existing agent fits a task, Jeeves asks Brittany to hire a new specialist.
-- Brittany draws from `Skills/` when creating new agents, embedding skills at hire-time.
+- Brittany draws from `.claude/skills/` when creating new agents, referencing skills at hire-time.
 
 ## Core Mechanic: Dynamic Hiring
 
 When a task requires a specialty no existing agent has, Jeeves does NOT attempt it himself.
 He asks Brittany to hire a new specialist by creating a new agent definition file.
-Brittany reads relevant `Skills/` files and embeds them in the new agent's prompt.
+Brittany reads relevant `.claude/skills/` files and references them in the new agent's prompt.
 The team grows permanently — every hired agent stays in `.claude/agents/` for all future tasks.
 
 ## File Conventions
 
-- Input from user: `OwnerInbox/`
-- All agent output: `AgentOutbox/`
-- Reusable skills library: `Skills/`
+- Input from user: `work/OwnerInbox/`
+- All agent output: `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/` (one subfolder per task)
+- Reusable skills library: `.claude/skills/`
 - Audit DB (Archie only): `data/audit.db`
 - Task state (Jeeves only): `.claude/state/current-task.json`
-- Agent definitions: `.claude/agents/[first-name].md`
+- Agent definitions: `.claude/agents/[first-name]-[specialty].md`
+
+### AgentOutbox Subfolder Convention
+Each task gets its own output folder: `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/`
+- `[task-id]` — the integer ID returned by Archie when the task is opened
+- `[task-slug]` — a short kebab-case slug derived from the prompt (3–5 words, lowercase, hyphens only)

@@ -1,5 +1,6 @@
 ---
 name: archie
+model: claude-sonnet-4-6
 description: Use Archie to log any interaction to the audit database, open a new task record, mark a task complete or failed, or query audit history. Archie is the only agent that accesses data/audit.db. Never use Archie for domain work of any kind.
 tools: ["Bash", "Read"]
 ---

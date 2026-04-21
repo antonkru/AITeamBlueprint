@@ -14,7 +14,23 @@
       "Bash(mkdir -p C:/develop/Repos/AITeamBlueprint/data)",
       "Bash(sqlite3 C:/develop/Repos/AITeamBlueprint/data/audit.db ' *)",
       "Bash(sqlite3 *)",
-      "Bash(claude --model claude-sonnet-4-6 -p \"You are Archie. Initialise the database if needed, then open a new task. Prompt summary: Write a marketing email for a new AI productivity tool aimed at small business owners. Files: OwnerInbox/prompt.md. Return the task_id.\" --allowedTools \"Bash,Read\")"
+      "Bash(claude --model claude-sonnet-4-6 -p \"You are Archie. Initialise the database if needed, then open a new task. Prompt summary: Write a marketing email for a new AI productivity tool aimed at small business owners. Files: work/OwnerInbox/prompt.md. Return the task_id.\" --allowedTools \"Bash,Read\")",
+      "Bash(mkdir -p work/OwnerInbox/done)",
+      "Bash(mkdir -p .claude/state)",
+      "Bash(mv work/OwnerInbox/* work/OwnerInbox/done/*)",
+      "Bash(ls *)",
+      "Bash(ls -tr *)",
+      "Write(work/AgentOutbox/*)",
+      "Edit(work/AgentOutbox/*)",
+      "Write(.claude/agents/*)",
+      "Edit(.claude/agents/*)",
+      "Write(.claude/skills/*)",
+      "Edit(.claude/skills/*)",
+      "Read(.claude/state/*)",
+      "Write(.claude/state/*)",
+      "Edit(.claude/state/*)",
+      "Bash(mkdir -p \"C:/develop/Repos/AITeamBlueprint/work/AgentOutbox/gmail-triage-2026-04-20\")",
+      "Bash(ToolSearch)"
     ]
   }
 }
