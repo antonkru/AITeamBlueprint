@@ -28,7 +28,7 @@ Some agents need access to connected services — Gmail, Google Calendar, Google
 
 ### Audit Trail
 
-Every task open, delegation, and completion is logged to a local SQLite database by **Archie**, the audit agent. No other agent touches the database directly. This gives you a permanent, queryable record of everything the team did and when.
+Every task open, delegation, and completion is logged to a local SQLite database by **Archie**, the audit agent. No other agent touches the database directly. This gives you a permanent, queryable record of everything the team did and when. Open `dashboard/index.html` in a browser to explore the audit trail visually — see the [Dashboard](#dashboard) section for details.
 
 ### Markup All the Way Down
 
@@ -127,6 +127,37 @@ Dismiss [agent name].
 ```
 
 Jeeves will remove the agent's definition file from `.claude/agents/`. This is permanent — the agent will need to be rehired if you want them back.
+
+---
+
+## Dashboard
+
+AITeamBlueprint ships with a local web dashboard for browsing the audit trail without needing a server.
+
+**File:** `dashboard/index.html`
+
+Open it directly in any modern browser — no install or build step required.
+
+### Loading the Database
+
+The dashboard opens a load screen prompting you to select the audit database file:
+
+```
+data/audit.db
+```
+
+Click **Load Database**, pick the file from your filesystem, and the dashboard opens. Use **Change DB** in the header to swap to a different file, or **Refresh** to re-read the current one.
+
+### Tasks Tab
+
+Shows a live summary of all tasks logged by Archie:
+
+- **Status chips** — at-a-glance counts for Total, Complete, In Progress, Blocked, Failed, and Open tasks.
+- **Task list** — each task is a collapsible row showing its status, ID, timestamp, and a prompt preview. Expand a row to see the full prompt, any attached files, and a chronological **interactions timeline** — every delegation, agent hire, output produced, and task close event, with timestamps.
+
+### Team Tab
+
+Displays a card for every agent currently registered in the audit database — name, role, and specialty. This reflects the live roster as Archie tracks it, including any specialists hired dynamically by Brittany.
 
 ---
 
