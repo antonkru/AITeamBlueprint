@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AITeamBlueprint — Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.2/dist/sql-wasm.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg-base:        #141414;
+      --bg-card:        #1e1e1e;
+      --bg-row-hover:   #252525;
+      --bg-header:      #1a1a1a;
+      --accent-ember:   #e05a1a;
+      --accent-lava:    #c03a0a;
+      --accent-glow:    #ff7a3a;
+      --text-primary:   #f0ebe5;
+      --text-muted:     #8a8078;
+      --text-dim:       #5a5450;
+      --border:         #2e2a28;
+    }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Load Screen ── */
+    #load-screen {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg-base);
+      z-index: 100;
+    }
+
+    .load-card {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-ember);
+      border-radius: 14px;
+      padding: 48px 56px;
+      text-align: center;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 0 60px rgba(224, 90, 26, 0.12);
+    }
+
+    .load-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--accent-glow);
+    }
+
+    .load-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .load-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    .load-hint {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .load-hint code {
+      color: var(--accent-glow);
+      background: rgba(255,122,58,0.1);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    .btn-load {
+      display: inline-block;
+      background: var(--accent-ember);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-load:hover { background: var(--accent-lava); }
+    .btn-load.initializing { background: #3a3530; color: var(--text-dim); cursor: default; }
+
+    #load-error {
+      margin-top: 16px;
+      color: #cf6f6f;
+      font-size: 13px;
+    }
+
+    /* ── Header ── */
+    #site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .header-logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-glow);
+      letter-spacing: 0.03em;
+    }
+
+    .header-sep {
+      color: var(--text-dim);
+    }
+
+    .header-subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .btn-sm {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn-sm:hover {
+      border-color: var(--accent-ember);
+      color: var(--accent-glow);
+    }
+
+    /* ── Dashboard Layout ── */
+    #dashboard {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn:hover { color: var(--text-primary); }
+
+    .tab-btn.tab-active {
+      color: var(--accent-glow);
+      border-bottom-color: var(--accent-ember);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.tab-visible { display: block; }
+
+    /* ── Status Summary ── */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .status-chip {
+      padding: 12px 20px;
+      border-radius: 10px;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .chip-count {
+      display: block;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .chip-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .chip-total    { background: #252520; color: var(--text-primary); }
+    .chip-complete { background: #1a3a1a; color: #6fcf6f; }
+    .chip-inprogress { background: #1a2d3a; color: #6fa8cf; }
+    .chip-blocked  { background: #3a1a1a; color: #cf6f6f; }
+    .chip-failed   { background: #3a1a1a; color: #cf4040; }
+    .chip-open     { background: #2a2520; color: #cfb06f; }
+    .chip-default  { background: #2a2520; color: var(--text-muted); }
+
+    /* ── Tasks List ── */
+    .tasks-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .count-badge {
+      background: var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    details.task-row {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    details.task-row[open] {
+      border-color: var(--accent-ember);
+    }
+
+    summary.task-summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    summary.task-summary::-webkit-details-marker { display: none; }
+
+    summary.task-summary::before {
+      content: '▶';
+      font-size: 9px;
+      color: var(--accent-ember);
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+
+    details[open] > summary.task-summary::before {
+      transform: rotate(90deg);
+    }
+
+    summary.task-summary:hover { background: var(--bg-row-hover); }
+
+    .task-id {
+      color: var(--text-dim);
+      font-size: 11px;
+      font-family: monospace;
+      flex-shrink: 0;
+    }
+
+    .task-timestamp {
+      color: var(--text-dim);
+      font-size: 11px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .task-prompt-preview {
+      color: var(--text-primary);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .int-count-badge {
+      background: rgba(224,90,26,0.15);
+      color: var(--accent-glow);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── Task Body ── */
+    .task-body {
+      padding: 0 16px 16px 36px;
+      border-top: 1px solid var(--border);
+    }
+
+    .task-prompt-full {
+      color: var(--text-primary);
+      font-size: 13px;
+      padding: 14px 0 10px;
+      line-height: 1.6;
+    }
+
+    .task-files {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .task-files code {
+      color: var(--accent-glow);
+      font-size: 11px;
+    }
+
+    /* ── Interactions Timeline ── */
+    .timeline-heading {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 14px 0 10px;
+    }
+
+    .interactions-timeline {
+      border-left: 2px solid var(--border);
+      padding-left: 16px;
+      margin-top: 4px;
+    }
+
+    .interaction-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .action-task-opened  { background: rgba(255,122,58,0.2); color: var(--accent-glow); }
+    .action-delegated    { background: #2a2520; color: var(--text-muted); }
+    .action-hired-agent  { background: rgba(224,90,26,0.2); color: var(--accent-ember); }
+    .action-produced-output { background: #1a3a1a; color: #6fcf6f; }
+    .action-task-closed  { background: #222; color: var(--text-dim); }
+    .action-default      { background: #252525; color: var(--text-muted); }
+
+    .int-agent {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .int-time {
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      font-family: monospace;
+    }
+
+    .int-summary {
+      font-size: 12px;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .int-file {
+      font-size: 11px;
+      color: var(--text-dim);
+      word-break: break-all;
+      width: 100%;
+      padding-left: 0;
+    }
+
+    .int-file code {
+      color: rgba(255,122,58,0.6);
+    }
+
+    .no-data {
+      color: var(--text-dim);
+      font-size: 13px;
+      padding: 12px 0;
+    }
+
+    /* ── Team Tab ── */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .agent-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent-ember);
+      border-radius: 8px;
+      padding: 18px 20px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .agent-card:hover {
+      background: var(--bg-row-hover);
+      border-color: var(--accent-ember);
+      border-top-color: var(--accent-glow);
+    }
+
+    .agent-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .agent-role {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-ember);
+      margin-bottom: 10px;
+    }
+
+    .agent-specialty {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Load Screen -->
+  <div id="load-screen">
+    <div class="load-card">
+      <div class="load-title">AITeamBlueprint</div>
+      <div class="load-subtitle">Audit Dashboard</div>
+      <div class="load-divider"></div>
+      <p class="load-hint">Select <code>data/audit.db</code> to view the team's audit trail.</p>
+      <label class="btn-load initializing" id="load-label" for="db-file-input">Initializing…</label>
+      <input type="file" id="db-file-input" accept=".db,.sqlite,.sqlite3"
+             style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+      <p id="load-error" hidden></p>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="dashboard" hidden>
+
+    <div id="site-header">
+      <span class="header-logo">AITeamBlueprint</span>
+      <span class="header-sep">/</span>
+      <span class="header-subtitle">Audit Dashboard</span>
+      <button class="btn-sm" id="refresh-btn">Refresh</button>
+      <button class="btn-sm" id="reload-btn">Change DB</button>
+    </div>
+
+    <div id="dashboard-inner">
+      <div class="tab-bar">
+        <button class="tab-btn tab-active" data-tab="tasks">Tasks</button>
+        <button class="tab-btn" data-tab="team">Team</button>
+      </div>
+
+      <!-- Tasks Tab -->
+      <div class="tab-panel tab-visible" id="panel-tasks">
+        <div class="section-title">Status Summary</div>
+        <div class="chip-row" id="status-chips"></div>
+
+        <div class="tasks-header">
+          <div class="section-title" style="margin-bottom:0">Tasks</div>
+          <span class="count-badge" id="task-count"></span>
+        </div>
+        <div id="tasks-list"></div>
+      </div>
+
+      <!-- Team Tab -->
+      <div class="tab-panel" id="panel-team">
+        <div class="section-title">Team Agents</div>
+        <div class="agents-grid" id="agents-grid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let SQL = null;
+    let db  = null;
+    let agents = [];
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function capitalize(str) {
+      return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '';
+      return String(ts).replace('T', ' ').slice(0, 16);
+    }
+
+    function labelStatus(s) {
+      return { complete: 'Complete', in_progress: 'In Progress', blocked: 'Blocked',
+               failed: 'Failed', open: 'Open' }[s] || capitalize(s) || '—';
+    }
+
+    function labelAction(a) {
+      return { task_opened: 'Opened', delegated: 'Delegated', hired_agent: 'Hired',
+               produced_output: 'Output', task_closed: 'Closed' }[a] || a;
+    }
+
+    function chipClass(s) {
+      return { complete: 'chip-complete', in_progress: 'chip-inprogress',
+               blocked: 'chip-blocked', failed: 'chip-failed',
+               open: 'chip-open' }[s] || 'chip-default';
+    }
+
+    function actionClass(a) {
+      return { task_opened: 'action-task-opened', delegated: 'action-delegated',
+               hired_agent: 'action-hired-agent', produced_output: 'action-produced-output',
+               task_closed: 'action-task-closed' }[a] || 'action-default';
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('load-error');
+      el.textContent = msg;
+      el.hidden = false;
+    }
+
+    function execQuery(sql, params) {
+      try {
+        return db.exec(sql, params);
+      } catch (e) {
+        console.error('Query failed:', sql, e);
+        return [];
+      }
+    }
+
+    function fetchAgents() {
+      const result = execQuery('SELECT name, role, specialty FROM agents ORDER BY name');
+      if (result.length) {
+        agents = result[0].values.map(([name, role, specialty]) => ({ name, role, specialty }));
+      } else {
+        agents = [];
+      }
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+
+    function renderStatusSummary() {
+      const result = execQuery(
+        'SELECT status, COUNT(*) AS cnt FROM tasks GROUP BY status ORDER BY cnt DESC'
+      );
+      const container = document.getElementById('status-chips');
+      container.innerHTML = '';
+
+      if (!result.length) {
+        container.innerHTML = '<p class="no-data">No task data.</p>';
+        return;
+      }
+
+      const rows = result[0].values;
+      const total = rows.reduce((s, r) => s + r[1], 0);
+
+      const totalChip = document.createElement('div');
+      totalChip.className = 'status-chip chip-total';
+      totalChip.innerHTML = `<span class="chip-count">${total}</span><span class="chip-label">Total</span>`;
+      container.appendChild(totalChip);
+
+      rows.forEach(([status, cnt]) => {
+        const chip = document.createElement('div');
+        chip.className = `status-chip ${chipClass(status)}`;
+        chip.innerHTML = `<span class="chip-count">${cnt}</span><span class="chip-label">${escapeHtml(labelStatus(status))}</span>`;
+        container.appendChild(chip);
+      });
+    }
+
+    function renderTasks() {
+      const tasksResult = execQuery(
+        `SELECT t.id, t.timestamp, t.prompt, t.files, t.status, COUNT(i.id) AS n
+         FROM tasks t LEFT JOIN interactions i ON i.task_id = t.id
+         GROUP BY t.id ORDER BY t.id DESC`
+      );
+
+      const intResult = execQuery(
+        `SELECT task_id, timestamp, LOWER(agent) AS agent, action, summary, output_file
+         FROM interactions ORDER BY task_id, id ASC`
+      );
+
+      // Group interactions by task_id
+      const byTask = new Map();
+      if (intResult.length) {
+        intResult[0].values.forEach(([task_id, timestamp, agent, action, summary, output_file]) => {
+          if (!byTask.has(task_id)) byTask.set(task_id, []);
+          byTask.get(task_id).push({ timestamp, agent, action, summary, output_file });
+        });
+      }
+
+      const container = document.getElementById('tasks-list');
+      container.innerHTML = '';
+
+      if (!tasksResult.length) {
+        container.innerHTML = '<p class="no-data">No tasks found.</p>';
+        return;
+      }
+
+      const tasks = tasksResult[0].values;
+      document.getElementById('task-count').textContent = tasks.length;
+
+      tasks.forEach(([id, timestamp, prompt, files, status, n]) => {
+        const interactions = byTask.get(id) || [];
+        container.appendChild(makeTaskRow(id, timestamp, prompt, files, status, interactions));
+      });
+    }
+
+    function makeTaskRow(id, timestamp, prompt, files, status, interactions) {
+      const details = document.createElement('details');
+      details.className = 'task-row';
+
+      const promptText = prompt || '';
+      const preview = promptText.length > 85 ? promptText.slice(0, 85) + '…' : promptText;
+
+      const summary = document.createElement('summary');
+      summary.className = 'task-summary';
+      summary.innerHTML = `
+        <span class="status-pill ${chipClass(status)}">${escapeHtml(labelStatus(status))}</span>
+        <span class="task-id">#${id}</span>
+        <span class="task-timestamp">${escapeHtml(formatDate(timestamp))}</span>
+        <span class="task-prompt-preview">${escapeHtml(preview)}</span>
+        <span class="int-count-badge" title="${interactions.length} interactions">${interactions.length}</span>
+      `;
+
+      const body = document.createElement('div');
+      body.className = 'task-body';
+
+      if (promptText.length > 85) {
+        const p = document.createElement('p');
+        p.className = 'task-prompt-full';
+        p.textContent = promptText;
+        body.appendChild(p);
+      }
+
+      if (files) {
+        const pf = document.createElement('p');
+        pf.className = 'task-files';
+        pf.innerHTML = `Files: <code>${escapeHtml(files)}</code>`;
+        body.appendChild(pf);
+      }
+
+      if (interactions.length) {
+        const timeline = document.createElement('div');
+        timeline.className = 'interactions-timeline';
+        const heading = document.createElement('div');
+        heading.className = 'timeline-heading';
+        heading.textContent = 'Interactions';
+        timeline.appendChild(heading);
+        interactions.forEach(int => timeline.appendChild(makeInteractionItem(int)));
+        body.appendChild(timeline);
+      } else {
+        const p = document.createElement('p');
+        p.className = 'no-data';
+        p.textContent = 'No interactions logged.';
+        body.appendChild(p);
+      }
+
+      details.appendChild(summary);
+      details.appendChild(body);
+      return details;
+    }
+
+    function makeInteractionItem({ timestamp, agent, action, summary, output_file }) {
+      const div = document.createElement('div');
+      div.className = 'interaction-item';
+
+      const time = formatDate(timestamp);
+      const agentDisplay = capitalize(agent || '');
+      const summaryText = summary || '';
+      const actionKey = (action || '').replace(/_/g, '-');
+
+      div.innerHTML = `
+        <span class="action-badge ${actionClass(action)}">${escapeHtml(labelAction(action))}</span>
+        <span class="int-agent">${escapeHtml(agentDisplay)}</span>
+        <span class="int-time">${escapeHtml(time)}</span>
+        <span class="int-summary">${escapeHtml(summaryText)}</span>
+      `;
+
+      if (output_file) {
+        const f = document.createElement('span');
+        f.className = 'int-file';
+        f.innerHTML = `<code>${escapeHtml(output_file)}</code>`;
+        div.appendChild(f);
+      }
+
+      return div;
+    }
+
+    function renderAgents() {
+      fetchAgents();
+      const grid = document.getElementById('agents-grid');
+      grid.innerHTML = '';
+      if (!agents.length) {
+        grid.innerHTML = '<p class="no-data">No agents found.</p>';
+        return;
+      }
+      agents.forEach(({ name, role, specialty }) => {
+        const card = document.createElement('div');
+        card.className = 'agent-card';
+        card.innerHTML = `
+          <div class="agent-name">${escapeHtml(name)}</div>
+          <span class="agent-role">${escapeHtml(role)}</span>
+          <div class="agent-specialty">${escapeHtml(specialty)}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderAll() {
+      try {
+        renderStatusSummary();
+        renderTasks();
+        renderAgents();
+      } catch (e) {
+        alert('Failed to read database: ' + e.message);
+      }
+    }
+
+    // ── Tab Switching ─────────────────────────────────────────────────────────
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-visible'));
+        btn.classList.add('tab-active');
+        document.getElementById('panel-' + target).classList.add('tab-visible');
+      });
+    });
+
+    // ── DB Load / Unload ──────────────────────────────────────────────────────
+
+    function showDashboard() {
+      document.getElementById('load-screen').hidden = true;
+      document.getElementById('dashboard').hidden = false;
+      renderAll();
+    }
+
+    function showLoadScreen() {
+      if (db) { db.close(); db = null; }
+      document.getElementById('db-file-input').value = '';
+      document.getElementById('load-error').hidden = true;
+      document.getElementById('dashboard').hidden = true;
+      document.getElementById('load-screen').hidden = false;
+      // Reset to Tasks tab
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-visible'));
+      document.querySelector('[data-tab="tasks"]').classList.add('tab-active');
+      document.getElementById('panel-tasks').classList.add('tab-visible');
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', () => { if (db) renderAll(); });
+    document.getElementById('reload-btn').addEventListener('click', showLoadScreen);
+
+    document.getElementById('db-file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      this.value = '';
+      if (!file) return;
+
+      if (!SQL) {
+        showError('sql.js not ready — wait a moment and try again.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        try {
+          const uint8 = new Uint8Array(ev.target.result);
+          if (db) db.close();
+          db = new SQL.Database(uint8);
+          showDashboard();
+        } catch (err) {
+          showError('Could not open database: ' + err.message);
+        }
+      };
+      reader.onerror = () => showError('File read failed.');
+      reader.readAsArrayBuffer(file);
+    });
+
+    // ── Init sql.js ───────────────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const label = document.getElementById('load-label');
+      try {
+        SQL = await initSqlJs({
+          locateFile: f => `https://cdn.jsdelivr.net/npm/sql.js@1.10.2/dist/${f}`
+        });
+        label.textContent = 'Load Database';
+        label.classList.remove('initializing');
+      } catch (e) {
+        showError('Failed to load sql.js from CDN. Check your internet connection.');
+      }
+    });
+  </script>
+</body>
+</html>

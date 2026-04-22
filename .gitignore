@@ -1,0 +1,8 @@
+# Working directories and files
+.claude/state/current-task.json
+work/AgentOutbox/*
+!work/AgentOutbox/sample-agent-output.md
+work/OwnerInbox/*
+work/OwnerInbox/**/*
+!work/OwnerInbox/backlog/
+!work/OwnerInbox/backlog/sample-task.md
