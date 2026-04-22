@@ -1,6 +1,10 @@
 # Environment variables
 .env
 
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Working directories and files
 .claude/state/current-task.json
 work/AgentOutbox/*
