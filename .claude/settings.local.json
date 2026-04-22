@@ -12,7 +12,7 @@
       "WebFetch(domain:www.reddit.com)",
       "WebFetch(domain:news.ycombinator.com)",
       "Bash(mkdir -p C:/develop/Repos/AITeamBlueprint/data)",
-      "Bash(sqlite3 C:/develop/Repos/AITeamBlueprint/data/audit.db ' *)",
+      "Bash(sqlite3 data/audit.db ' *)",
       "Bash(sqlite3 *)",
       "Bash(claude --model claude-sonnet-4-6 -p \"You are Archie. Initialise the database if needed, then open a new task. Prompt summary: Write a marketing email for a new AI productivity tool aimed at small business owners. Files: work/OwnerInbox/prompt.md. Return the task_id.\" --allowedTools \"Bash,Read\")",
       "Bash(mkdir -p work/OwnerInbox/done)",
@@ -29,14 +29,12 @@
       "Read(.claude/state/*)",
       "Write(.claude/state/*)",
       "Edit(.claude/state/*)",
-      "Bash(mkdir -p \"C:/develop/Repos/AITeamBlueprint/work/AgentOutbox/gmail-triage-2026-04-20\")",
       "Bash(ToolSearch)",
       "mcp__claude_ai_Gmail__search_threads",
       "mcp__claude_ai_Gmail__get_thread",
       "mcp__claude_ai_Google_Calendar__list_events",
       "mcp__claude_ai_Google_Calendar__list_calendars",
-      "Bash(sqlite3 /c/develop/Repos/AITeamBlueprint/data/audit.db \".mode markdown\" \"SELECT id, timestamp, substr\\(prompt,1,80\\) as prompt, files, status FROM tasks ORDER BY id;\")",
-      "Bash(sqlite3 /c/develop/Repos/AITeamBlueprint/data/audit.db \".mode markdown\" \"SELECT id, task_id, timestamp, agent, action, substr\\(summary,1,100\\) as summary, output_file FROM interactions ORDER BY id;\")"
+      "Bash(git push *)"    
     ]
   }
 }
