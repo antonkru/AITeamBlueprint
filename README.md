@@ -1,148 +1,166 @@
-# AITeamBlueprint — Feature Research Report
-**Date:** 2026-04-20
-**Prepared by:** Brian, Research Specialist
-**Audience target:** Small business owners (non-technical)
+# AITeamBlueprint
+
+A ready-made AI team for small business owners. Drop a request into an inbox folder — a coordinator named Jeeves reads it, delegates to the right specialists, and delivers finished work to an output folder. If the team lacks a skill, it hires a new specialist automatically.
 
 ---
 
-## Executive Summary
+## How It Works
 
-- AITeamBlueprint gives small business owners a **ready-made AI team** — not a single chatbot, but a group of named specialists who divide up the work, just like real employees.
-- A single inbox drop-off triggers the entire workflow: the owner writes what they need, and the team handles the rest from start to finish.
-- The standout capability is **self-expanding hiring** — if the team lacks a skill, it recruits a new AI specialist automatically, and that specialist stays on the team permanently.
-- The team already covers the most common small-business pain points: research, writing, marketing copy, software automation, and a full audit trail.
-- Every completed job produces a clean file in a dedicated output folder — no digging through chat histories or copy-pasting results.
+AITeamBlueprint is built on top of **Claude Code's native multi-agent architecture**. Rather than a single AI trying to do everything, the system runs a permanent team of specialised agents — each with a defined role, a curated skill set, and clear boundaries on what it owns.
 
----
+### The Coordinator Pattern
 
-## Feature Highlights for Small Business Owners
+At the centre is **Jeeves**, a coordinator agent that runs as the top-level Claude Code session. He owns the inbox, manages task state, and decides which specialist to delegate each piece of work to. He never does domain work himself — he routes, tracks, and synthesises.
 
-### 1. Drop Your Request in One Place — the Team Takes It From There
-You don't manage individual AI tools or figure out which one to use. You place your request (and any supporting files) in the `work/OwnerInbox/` folder. **Jeeves**, the team coordinator, reads it, breaks it into tasks, routes each piece to the right specialist, and delivers finished work to `work/AgentOutbox/`. You come back to a finished result — no babysitting required.
+When Jeeves delegates a task he spawns a **subagent** — a fresh Claude session scoped to that specialist's role, tools, and prompt. Each subagent runs in isolation, returns its output, and exits. This keeps context clean and prevents one agent's work from polluting another's.
 
-> *Think of it like emailing your office manager. You describe what you need; he figures out who does it.*
+### Specialisation Over Generalisation
 
----
+Every agent is defined by a Markdown file in `.claude/agents/`. That file acts as a system prompt, tightly scoping what the agent knows, what tools it has access to, and what format its output must take. Brian only researches. Claire only writes copy. Devon only writes code. Narrow scope means higher quality per agent and no prompt drift between tasks.
 
-### 2. A Real Team of Specialists — Not a Jack-of-All-Trades Bot
-Each team member has a defined job and stays in their lane. This means higher-quality output than asking one AI to do everything:
+### Dynamic Hiring
 
-| Team Member | What They Do for You |
-|-------------|----------------------|
-| **Jeeves** (Coordinator) | Reads your request, assigns work, tracks progress, delivers the final summary. You never have to manage the team yourself. |
-| **Brian** (Researcher) | Searches the web, cross-references sources, and produces structured reports — competitor analysis, market research, fact-finding, article summaries. Always cites his sources. |
-| **Claire** (Marketing Copywriter) | Writes emails, ad copy, social media posts, and landing page content. Follows proven conversion frameworks and tailors tone to your audience. |
-| **Devon** (Developer) | Writes scripts, builds automations, connects to external services (APIs), and handles data processing tasks — no coding knowledge required on your end. |
-| **Archie** (Audit Manager) | Keeps a complete, timestamped log of every task and action taken. You always have a paper trail of what was done and when. |
-| **Brittany** (HR Agent) | Hires brand-new specialists whenever the team hits a gap. She draws on a library of professional skills to create a fully capable new team member in one step. |
+The team is not static. When Jeeves encounters a task that no existing agent can handle, he asks **Brittany** — the HR agent — to create a new specialist on the spot. Brittany reads the relevant skill modules from `.claude/skills/` and assembles a new agent definition. That agent is immediately available and stays on the team permanently, so the system grows smarter with every novel request.
 
----
+### MCP Tool Access
 
-### 3. Your Team Grows With Your Business — Automatically
-This is the feature that sets AITeamBlueprint apart from any single AI assistant.
+Some agents need access to connected services — Gmail, Google Calendar, Google Drive. Claude Code's **Model Context Protocol (MCP)** layer makes these tools available to the top-level session. Agents that require MCP tools (like the email triage agent Gavin) run inline inside Jeeves's session rather than as isolated subagents, giving them the same live service connections without requiring credentials to be re-established.
 
-**The problem it solves:** Every business eventually needs something outside the standard toolkit — a legal summary, a data analysis, an SEO audit, a social media strategy. With a fixed AI tool, you're stuck.
+### Audit Trail
 
-**How AITeamBlueprint handles it:**
-1. Jeeves recognises that no current team member can handle the task.
-2. He asks Brittany (HR) to hire a new specialist.
-3. Brittany draws from a **Skills Library** — a curated collection of professional know-how — and creates a fully equipped AI employee in minutes.
-4. That new specialist **stays on the team permanently**, available for every future job that fits their role.
+Every task open, delegation, and completion is logged to a local SQLite database by **Archie**, the audit agent. No other agent touches the database directly. This gives you a permanent, queryable record of everything the team did and when.
 
-The team you have today is not the ceiling — it's the starting point. Every new hire adds a permanent capability to your business.
+### Markup All the Way Down
+
+There is no code in this system. Every agent, every skill module, every task prompt, and every piece of coordinator logic is expressed as plain Markdown. Agent definitions are `.md` files. Skills are `.md` files. Your requests to the team are `.md` files. The entire system is configured, extended, and operated through text that any non-technical person can read and edit — no programming required.
+
+### The Net Result
+
+A business owner drops a plain-text request into a folder. Jeeves reads it, figures out who on the team is best placed to handle it, spawns the right specialists, collects the output, and writes the finished deliverable to an output folder — all without the owner needing to know which agent did what or how Claude Code's internals work.
 
 ---
 
-### 4. A Growing Library of Professional Skills
-New team members are built from a structured **Skills Library** that already includes:
+## The Team
 
-- **Web Research** — systematic, source-cited information gathering
-- **Structured Report Writing** — executive summaries, findings, and cited sources
-- **Marketing Copywriting** — email, ad, and landing page frameworks proven to convert
-- **Coding & Software Development** — scripts, automations, and API integrations
-- **Code Review** — security, bug, and performance checks on existing code
-- **Data Analysis** — pattern spotting, insights, and actionable next steps
-
-New skills can be added to the library at any time, making every future hire smarter.
-
----
-
-### 5. Every Job Leaves a Paper Trail
-Archie logs every task opened, every specialist deployed, and every file produced — all stored in a local database. This means:
-- You can review exactly what was done and when.
-- Nothing gets lost between sessions.
-- If something goes wrong, there's a full record to diagnose it.
-
-For small business owners who need accountability (for themselves, their team, or their clients), this is built in by default — not an afterthought.
+| Name | Role | What They Do |
+|------|------|-------------|
+| **Jeeves** | Coordinator | Reads your request, assigns work, tracks progress, delivers the final summary |
+| **Brian** | Researcher | Web research, competitor analysis, market research, structured reports |
+| **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts |
+| **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
+| **Devon** | Developer | Scripts, API integrations, automations, data processing |
+| **Archie** | Audit Manager | Logs every task and action taken — full paper trail in a local database |
+| **Brittany** | HR Agent | Hires new specialists on demand, draws from the Skills Library |
+| *(grows)* | | New specialists hired by Brittany as needed, stay permanently |
 
 ---
 
-### 6. Results Land in a Clean Output Folder
-Every completed piece of work — reports, emails, code, summaries — is written to `work/AgentOutbox/` with a clear, dated filename. No scrolling through chat. No copy-pasting. Your deliverables are organised files, ready to use or hand off.
+## How to Use
+
+### Prerequisites
+
+Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+### Start a Session
+
+Open a terminal in the project root and start Claude Code:
+
+```bash
+claude
+```
+
+Jeeves is your interface. He runs as the top-level session coordinator — you talk to him directly.
+
+### Submitting Work
+
+1. Write your request as a `.md` file and drop it into `work/OwnerInbox/`:
+
+   ```
+   work/OwnerInbox/my-request.md
+   ```
+
+2. If your request references a supporting file (spreadsheet, data file, etc.), name it with the same stem:
+
+   ```
+   work/OwnerInbox/my-request.xlsx
+   work/OwnerInbox/my-request-data.csv
+   ```
+
+3. Tell Jeeves to process the inbox:
+
+   ```
+   Process the inbox.
+   ```
+
+   Or simply start your session — Jeeves will check the inbox automatically.
+
+4. Pick up finished work from `work/AgentOutbox/`. Each task gets its own dated subfolder.
+
+### Multiple Requests
+
+Drop multiple `.md` files into `work/OwnerInbox/` and Jeeves processes them one at a time, oldest-first. To reprioritise, prefix a filename with a number (e.g. `001-urgent.md`).
 
 ---
 
-### 7. Consistent Quality Standards Baked In
-Each specialist follows professional protocols embedded in their role:
-- **Brian** cross-references at least 3 sources and flags low-confidence claims.
-- **Claire** checks every email against a quality checklist (subject line length, single CTA, proof points, paragraph length).
-- **Devon** handles edge cases, timeouts, and errors — not just the happy path.
-- **Archie** validates every database action before confirming it.
+## Managing the Team
 
-You get professional-grade output standards without having to specify them every time.
+### Hiring a New Specialist
 
----
+Jeeves hires automatically when no existing agent fits a task. You can also request it directly:
 
-## Detailed Findings
+```
+Hire a specialist who can review legal documents.
+```
 
-### How the Workflow Works (Step by Step)
-1. Owner places `prompt.md` (and any reference files) in `work/OwnerInbox/`.
-2. Jeeves reads the inbox, opens a task record via Archie, and writes a task plan.
-3. Jeeves checks whether existing specialists can cover the work.
-4. If a gap exists, Brittany hires a new specialist from the Skills Library.
-5. Jeeves delegates each piece of work to the appropriate specialist.
-6. Each specialist reads from `work/OwnerInbox/`, does their work, and writes output to `work/AgentOutbox/`.
-7. Archie logs every action taken.
-8. Jeeves writes a summary file listing all outputs, then closes the task.
+Brittany creates the new agent from the Skills Library. The specialist stays on the team permanently.
 
-The owner's only touchpoint: drop files in, pick up results from `work/AgentOutbox/`.
+### Dismissing an Agent
 
-### What Makes Dynamic Hiring Uniquely Valuable
-- Most AI tools are fixed. They do what they were designed for and nothing else.
-- AITeamBlueprint treats skill gaps as a **hiring problem**, not a limitation.
-- The Skills Library acts as a pool of professional training — Brittany draws from it to create experts, not generalists.
-- Hired agents are permanent. The business never loses a capability it has acquired.
-- Brian can even **write new skill files** when a domain isn't covered yet — so the system can grow into entirely new territories.
+To remove a specialist from the team, ask Jeeves:
 
-### Current Team Headcount and Coverage
-As of 2026-04-19 (per `work/AgentOutbox/team-listing-2026-04-19.md`): **5 active agents** on file.
-Skills Library: **6 skill modules** available for new hires.
+```
+Dismiss [agent name].
+```
+
+Jeeves will remove the agent's definition file from `.claude/agents/`. This is permanent — the agent will need to be rehired if you want them back.
 
 ---
 
-## Confidence Notes
+## File Layout
 
-- All findings are drawn directly from source files in the repository (`CLAUDE.md`, individual agent definition files in `.claude/agents/`, and `.claude/skills/`). **Confidence: High.**
-- The team listing from `work/AgentOutbox/team-listing-2026-04-19.md` confirms 5 agents as of 2026-04-19. `README.md` contains no additional detail beyond the project title. **Confidence: High.**
-- Claims about *business value* (time savings, quality standards) are inferred from the documented protocols and workflows — no external benchmarking data exists in this repository. **Confidence: Medium** (reasonable inference, not measured).
+```
+work/
+  OwnerInbox/          ← Drop prompt files here
+    done/              ← Processed prompts are archived here
+  AgentOutbox/         ← Finished work lands here
+    [id]-[slug]-[date]/
+
+.claude/
+  agents/              ← One .md file per team member
+  skills/              ← Reusable skill modules for new hires
+  state/               ← Current task state (managed by Jeeves)
+
+data/
+  audit.db             ← Full task and action log (managed by Archie)
+```
 
 ---
 
-## Sources
+## Skills Library
 
-All sources are internal repository files — no external URLs consulted for this report, as the research task was product documentation extraction.
+New team members are built from these skill modules:
 
-1. `C:/develop/Repos/AITeamBlueprint/CLAUDE.md` — Master project overview: team roster, workflow, dynamic hiring mechanic, file conventions
-2. `C:/develop/Repos/AITeamBlueprint/.claude/agents/jeeves.md` — Full coordinator workflow: inbox reading, task state, delegation, synthesis
-3. `C:/develop/Repos/AITeamBlueprint/.claude/agents/brittany.md` — HR agent: hiring process, skill embedding, duplicate checks, agent template
-4. `C:/develop/Repos/AITeamBlueprint/.claude/agents/brian.md` — Research specialist: web research protocol, report writing standards
-5. `C:/develop/Repos/AITeamBlueprint/.claude/agents/claire.md` — Marketing copywriter: email structure, quality checklist, voice guidelines
-6. `C:/develop/Repos/AITeamBlueprint/.claude/agents/devon.md` — Software developer: coding standards, API integration checklist, output format
-7. `C:/develop/Repos/AITeamBlueprint/.claude/agents/archie.md` — Audit manager: database schema, logging commands, response format
-8. `C:/develop/Repos/AITeamBlueprint/work/AgentOutbox/team-listing-2026-04-19.md` — Current team headcount and role descriptions as of 2026-04-19
-9. `C:/develop/Repos/AITeamBlueprint/.claude/skills/web-research.md` — Web Research skill module
-10. `C:/develop/Repos/AITeamBlueprint/.claude/skills/report-writing.md` — Structured Report Writing skill module
-11. `C:/develop/Repos/AITeamBlueprint/.claude/skills/coding.md` — Coding & Software Development skill module
-12. `C:/develop/Repos/AITeamBlueprint/.claude/skills/code-review.md` — Code Review skill module
-13. `C:/develop/Repos/AITeamBlueprint/.claude/skills/data-analysis.md` — Data Analysis skill module
-14. `C:/develop/Repos/AITeamBlueprint/.claude/skills/marketing-copywriting.md` — Marketing Copywriting skill module
+- Web Research
+- Structured Report Writing
+- Marketing Copywriting
+- Video Script Writing
+- Coding & Software Development
+- Code Review
+- Data Analysis
+- Email Triage
+
+New skill files can be added to `.claude/skills/` at any time, making every future hire smarter.

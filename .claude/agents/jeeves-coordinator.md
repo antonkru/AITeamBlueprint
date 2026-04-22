@@ -31,7 +31,7 @@ ls -tr work/OwnerInbox/*.md 2>/dev/null | grep -v '/done/' | head -1
 ```
 
 - If the command returns **nothing**: report "Inbox is empty — nothing to do. Drop a prompt file into `work/OwnerInbox/` to start a task." and stop immediately. Do not proceed to Step 3 or beyond.
-- If a file is returned: that is `[prompt-file]`. Read it plus any non-`.md` supporting files in the inbox root. Understand the full request before proceeding.
+- If a file is returned: that is `[prompt-file]`. Derive its stem (filename without `.md` extension). Glob `work/OwnerInbox/[stem]*.*` and collect any matches that are **not** `.md` files — these are the associated reference files. Read the prompt and all reference files. Understand the full request before proceeding.
 
 ### Step 3 — Open a Task Record (via Archie)
 Invoke Archie via Task tool:
@@ -57,7 +57,7 @@ Write `.claude/state/current-task.json`:
   "output_folder": "work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]",
   "prompt_file": "work/OwnerInbox/[prompt-file]",
   "prompt": "[one-sentence summary]",
-  "input_files": ["work/OwnerInbox/[prompt-file]"],
+  "input_files": ["work/OwnerInbox/[prompt-file]", "work/OwnerInbox/[ref1]", "..."],
   "steps": [
     { "agent": "[name]", "status": "pending", "output": null }
   ],
@@ -112,6 +112,15 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 STEM="${[prompt-file]%.*}"
 EXT="${[prompt-file]##*.}"
 mv "work/OwnerInbox/[prompt-file]" "work/OwnerInbox/done/${STEM}-${TIMESTAMP}.${EXT}"
+# Archive associated reference files (stem-matched, non-.md)
+for ref in work/OwnerInbox/${STEM}*.*; do
+  [ -f "$ref" ] || continue
+  [[ "$ref" == *.md ]] && continue
+  ref_base="${ref##*/}"
+  ref_stem="${ref_base%.*}"
+  ref_ext="${ref_base##*.}"
+  mv "$ref" "work/OwnerInbox/done/${ref_stem}-${TIMESTAMP}.${ref_ext}"
+done
 ```
 
 Tell Archie: "Mark task [id] complete."
