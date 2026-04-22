@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "gemini-image": {
+      "command": "python3",
+      "args": ["/workspaces/AITeamBlueprint/tools/gemini-image-mcp/server.py"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    }
+  }
+}

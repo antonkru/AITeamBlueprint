@@ -1,3 +1,6 @@
+# Environment variables
+.env
+
 # Working directories and files
 .claude/state/current-task.json
 work/AgentOutbox/*

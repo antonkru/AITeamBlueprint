@@ -75,7 +75,7 @@ Read the `description` frontmatter of each `.md` file. Determine which agent(s) 
 Invoke Brittany via Task tool with a structured brief:
 - What specialty is needed and why
 - Which `.claude/skills/` files are likely relevant
-- What tools the new agent will require
+- What tools the new agent will require (if any are `mcp__*` tools, flag this explicitly so the agent's frontmatter reflects it)
 - What persona and tone fits the role
 
 **If Brittany reports that no relevant skill exists in `.claude/skills/`:**
@@ -90,7 +90,11 @@ After Brittany confirms the hire, tell Archie to:
 Update `.claude/state/current-task.json`: add the new agent to `steps`, add name to `hired_this_session`.
 
 ### Step 7 — Delegate to Specialist(s)
-For each required agent, invoke via Task tool. In the prompt, specify:
+
+**Before delegating, determine execution mode for each agent:**
+Read the agent's `tools` frontmatter. If any tool name starts with `mcp__`, the agent **must run inline** — read its definition file and follow its protocol directly in this session (do NOT use the Task tool). This applies to all agents, including newly hired ones. If no tool starts with `mcp__`, invoke via the Task tool as normal.
+
+For each required agent, invoke via Task tool or inline as determined above. In the prompt (or inline execution), specify:
 - The exact task to perform
 - Which file(s) to read from `work/OwnerInbox/`
 - The exact output path to write to inside `[output_folder]` from the state file (e.g. `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/[agent-output-name].md`)
