@@ -509,6 +509,7 @@
       <span class="header-logo">AITeamBlueprint</span>
       <span class="header-sep">/</span>
       <span class="header-subtitle">Audit Dashboard</span>
+      <button class="btn-sm" id="refresh-btn">Refresh</button>
       <button class="btn-sm" id="reload-btn">Change DB</button>
     </div>
 
@@ -821,6 +822,7 @@
       document.getElementById('panel-tasks').classList.add('tab-visible');
     }
 
+    document.getElementById('refresh-btn').addEventListener('click', () => { if (db) renderAll(); });
     document.getElementById('reload-btn').addEventListener('click', showLoadScreen);
 
     document.getElementById('db-file-input').addEventListener('change', function (e) {
