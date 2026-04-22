@@ -45,11 +45,21 @@ sqlite3 data/audit.db "SELECT MAX(id) FROM tasks;"
 sqlite3 data/audit.db "INSERT INTO interactions (task_id,timestamp,agent,action,summary,output_file) VALUES ([task_id],datetime('now'),'[agent]','[action]','[summary]','[output_file or NULL]');"
 ```
 
-Valid action values: `task_opened`, `delegated`, `hired_agent`, `produced_output`, `task_closed`
+Valid action values: `task_opened`, `delegated`, `hired_agent`, `dismissed_agent`, `produced_output`, `task_closed`
 
 **Mark task complete or failed:**
 ```bash
 sqlite3 data/audit.db "UPDATE tasks SET status='[complete|failed]' WHERE id=[task_id];"
+```
+
+**Register a hired agent:**
+```bash
+sqlite3 data/audit.db "INSERT OR REPLACE INTO agents (name, role, specialty) VALUES ('[name]', '[role]', '[specialty]');"
+```
+
+**Unregister a dismissed agent:**
+```bash
+sqlite3 data/audit.db "DELETE FROM agents WHERE name = '[name]';"
 ```
 
 **Query recent tasks:**

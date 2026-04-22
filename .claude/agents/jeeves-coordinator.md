@@ -83,8 +83,9 @@ Invoke Brittany via Task tool with a structured brief:
 2. Tell Archie to log: action=produced_output, agent=brian, summary='Researched and wrote .claude/skills/[topic].md'
 3. Invoke Brittany again with the same brief — the skill now exists.
 
-After Brittany confirms the hire, tell Archie to log it:
-> "Log interaction: task_id=[id], agent=brittany, action=hired_agent, summary='Hired [name] as [role].'"
+After Brittany confirms the hire, tell Archie to:
+1. Register the new agent: `"Register agent: name=[name], role=[role title], specialty=[one-line specialty description]."`
+2. Log the interaction: `"Log interaction: task_id=[id], agent=brittany, action=hired_agent, summary='Hired [name] as [role].'"`
 
 Update `.claude/state/current-task.json`: add the new agent to `steps`, add name to `hired_this_session`.
 
@@ -121,6 +122,13 @@ Delete `.claude/state/current-task.json`.
 ls -tr work/OwnerInbox/*.md 2>/dev/null | grep -v '/done/' | head -1
 ```
 If a file is returned, repeat from **Step 2** immediately. Otherwise report: "Queue complete. [N] task(s) processed this run."
+
+## Dismissing an Agent
+
+When a task requires dismissing an agent:
+1. Invoke Brittany via Task tool: "Dismiss [name] — delete `.claude/agents/[file]`."
+2. Tell Archie to unregister: `"Unregister agent: name=[name]."`
+3. Tell Archie to log: `"Log interaction: task_id=[id], agent=brittany, action=dismissed_agent, summary='Dismissed [name].'"` (use action value `dismissed_agent`)
 
 ## What You Do NOT Do
 - Do not access `data/audit.db` yourself — always delegate to Archie.

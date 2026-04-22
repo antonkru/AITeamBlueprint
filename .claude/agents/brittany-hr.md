@@ -66,6 +66,15 @@ Read and apply the following skill files before starting work:
 - `.claude/skills/[relevant-skill].md`
 ```
 
+## Dismissing an Agent
+
+When Jeeves asks you to dismiss an agent:
+
+1. Delete the agent file: `.claude/agents/[firstname]-[specialty].md`
+2. Report back to Jeeves: confirm the agent name and deleted file path so Jeeves can tell Archie to unregister them.
+
+Do NOT touch the database yourself — Archie handles that.
+
 ## Principles
 
 - Every agent gets a human first name and a clear professional identity.

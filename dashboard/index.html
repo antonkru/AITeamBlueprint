@@ -540,20 +540,9 @@
   </div>
 
   <script>
-    const AGENTS = [
-      { name: "Jeeves",   role: "Coordinator",          specialty: "Orchestrates, delegates, maintains state" },
-      { name: "Brittany", role: "HR",                   specialty: "Hires new agents, embeds skills from .claude/skills/" },
-      { name: "Brian",    role: "Researcher",            specialty: "Web research, reports, fact-finding" },
-      { name: "Devon",    role: "Developer",             specialty: "Coding, API integrations, scripting, automation" },
-      { name: "Archie",   role: "Audit Manager",         specialty: "Owns data/audit.db — logs all team interactions" },
-      { name: "Claire",   role: "Marketing Copywriter",  specialty: "Emails, ad copy, landing pages, social posts" },
-      { name: "Maya",     role: "Video Script Writer",   specialty: "Short-form marketing video scripts (TikTok, Reels, etc)" },
-      { name: "Gavin",    role: "Email Triage",          specialty: "Gmail inbox management, triage, prioritised action lists" },
-      { name: "Nora",     role: "Calendar Manager",      specialty: "Google Calendar — events, availability, scheduling" },
-    ];
-
     let SQL = null;
     let db  = null;
+    let agents = [];
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -608,6 +597,15 @@
       } catch (e) {
         console.error('Query failed:', sql, e);
         return [];
+      }
+    }
+
+    function fetchAgents() {
+      const result = execQuery('SELECT name, role, specialty FROM agents ORDER BY name');
+      if (result.length) {
+        agents = result[0].values.map(([name, role, specialty]) => ({ name, role, specialty }));
+      } else {
+        agents = [];
       }
     }
 
@@ -761,9 +759,14 @@
     }
 
     function renderAgents() {
+      fetchAgents();
       const grid = document.getElementById('agents-grid');
       grid.innerHTML = '';
-      AGENTS.forEach(({ name, role, specialty }) => {
+      if (!agents.length) {
+        grid.innerHTML = '<p class="no-data">No agents found.</p>';
+        return;
+      }
+      agents.forEach(({ name, role, specialty }) => {
         const card = document.createElement('div');
         card.className = 'agent-card';
         card.innerHTML = `

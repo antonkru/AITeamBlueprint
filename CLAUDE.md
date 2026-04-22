@@ -6,7 +6,7 @@
 
 ## The Team
 
-See [team.md](team.md) for the current roster.
+See the Team tab in the dashboard for the current roster.
 
 ## Workflow
 
