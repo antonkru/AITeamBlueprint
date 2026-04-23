@@ -1,6 +1,6 @@
 # AITeamBlueprint
 
-A ready-made AI team for small business owners. Drop a request into an inbox folder — a coordinator named Jeeves reads it, delegates to the right specialists, and delivers finished work to an output folder. If the team lacks a skill, it hires a new specialist automatically.
+A ready-made AI agent team for small business owners. Drop a request into an inbox folder — a coordinator named Jeeves reads it, delegates to the right specialists, and delivers finished work to an output folder. If the team lacks a skill, it hires a new specialist automatically.
 
 ---
 
@@ -73,7 +73,13 @@ Open a terminal in the project root and start Claude Code:
 claude
 ```
 
-Jeeves is your interface. He runs as the top-level session coordinator — you talk to him directly.
+Jeeves is your interface. He runs as the top-level session coordinator — you talk to him directly. 
+
+Initialise Jeeves:
+
+```bash
+use jeeves
+```
 
 ### Submitting Work
 
