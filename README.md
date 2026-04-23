@@ -47,10 +47,14 @@ A business owner drops a plain-text request into a folder. Jeeves reads it, figu
 | **Jeeves** | Coordinator | (Core member) Reads your request, assigns work, tracks progress, delivers the final summary |
 | **Brian** | Researcher | (Core member) Web research, competitor analysis, market research, structured reports |
 | **Brittany** | HR Agent | (Core member) Hires new specialists on demand, draws from the Skills Library |
-| **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts |
-| **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
-| **Devon** | Developer | Scripts, MCP and API integrations |
 | **Archie** | Audit Manager | Logs every task and action taken — full paper trail in a local database |
+| **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts, conversion-focused copy |
+| **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
+| **Devon** | Developer | Scripts, API integrations, workflow automation, debugging |
+| **Gavin** | Email Triage | Gmail inbox management, prioritised action lists, thread summaries |
+| **Iris** | Image Generator | AI-generated images via Gemini — hero banners, marketing assets, social visuals |
+| **Lexie** | Legal Reviewer | Contract and document review — risk, ambiguity, compliance, redline suggestions |
+| **Nora** | Calendar Manager | Google Calendar — events, availability, scheduling, invite responses |
 | *(grows)* | | New specialists hired by Brittany as needed, stay permanently |
 
 ---
