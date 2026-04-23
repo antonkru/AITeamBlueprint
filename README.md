@@ -47,10 +47,14 @@ A business owner drops a plain-text request into a folder. Jeeves reads it, figu
 | **Jeeves** | Coordinator | (Core member) Reads your request, assigns work, tracks progress, delivers the final summary |
 | **Brian** | Researcher | (Core member) Web research, competitor analysis, market research, structured reports |
 | **Brittany** | HR Agent | (Core member) Hires new specialists on demand, draws from the Skills Library |
-| **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts |
-| **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
-| **Devon** | Developer | Scripts, MCP and API integrations |
 | **Archie** | Audit Manager | Logs every task and action taken — full paper trail in a local database |
+| **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts, conversion-focused copy |
+| **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
+| **Devon** | Developer | Scripts, API integrations, workflow automation, debugging |
+| **Gavin** | Email Triage | Gmail inbox management, prioritised action lists, thread summaries |
+| **Iris** | Image Generator | AI-generated images via Gemini — hero banners, marketing assets, social visuals |
+| **Lexie** | Legal Reviewer | Contract and document review — risk, ambiguity, compliance, redline suggestions |
+| **Nora** | Calendar Manager | Google Calendar — events, availability, scheduling, invite responses |
 | *(grows)* | | New specialists hired by Brittany as needed, stay permanently |
 
 ---
@@ -73,7 +77,7 @@ Open a terminal in the project root and start Claude Code:
 claude
 ```
 
-Jeeves is your interface. He runs as the top-level session coordinator — you talk to him directly. 
+Jeeves is your interface. He runs as the top-level session coordinator — you talk to him directly.
 
 Initialise Jeeves:
 
@@ -81,20 +85,52 @@ Initialise Jeeves:
 use jeeves
 ```
 
-### Two Ways to Submit Work
+#### Remote Session (Mobile)
 
-**Inbox file** and **direct prompt** both reach Jeeves, but they trigger very different behaviour.
+To control Jeeves from your phone, start a remote-control session on your machine:
 
-| Aspect | Inbox file | Direct prompt |
-|---|---|---|
-| Audit trail | Full — Archie logs every delegation and output | None |
-| Resumable | Yes — state file survives interruptions | No |
-| Output location | `work/AgentOutbox/[id]-[slug]-[date]/` | Chat only |
-| Queue support | Yes — oldest-first, numeric prefix for priority | No |
-| Reference files | Yes — attach `.xlsx`, `.csv` with same stem | No |
-| Formal task record | Yes — task ID assigned by Archie | No |
+```bash
+claude --remote-control
+```
 
-Use **inbox files** for any work you want delivered, tracked, and retrievable. Use **direct prompts** for quick questions, team management (hiring or dismissing agents), or one-off instructions to Jeeves.
+Then open the **Claude mobile app**, tap the **Code** option, and connect to your running session.
+
+You can submit work to Jeeves in three ways from your phone:
+
+**1. Add a task to the inbox**
+Attach a file and ask Jeeves to save it as an inbox task:
+> "Save this as an inbox task — add it to `work/OwnerInbox/`."
+
+Jeeves writes the file to the inbox. Process it later by telling Jeeves to process the inbox.
+
+**2. Process inline (chat response)**
+Attach a file and ask Jeeves to handle it on the spot, returning the result in chat:
+> "Process this now and give me the result here."
+
+No task record is created and nothing is written to disk.
+
+**3. Process inline with outbox output**
+Attach a file and ask Jeeves to handle it and deliver the output to the outbox:
+> "Process this now and write the output to the outbox."
+
+Jeeves opens a task record with Archie, delegates the work, writes output to `work/AgentOutbox/`, and logs everything — same audit trail as an inbox task, just without the queue.
+
+> Available on Pro, Max, Team, and Enterprise plans.
+
+### Three Ways to Submit Work
+
+**Inbox file**, **direct prompt**, and **direct prompt with outbox output** each trigger different behaviour.
+
+| Aspect | Inbox file | Direct prompt | Direct prompt → outbox |
+|---|---|---|---|
+| Audit trail | Full — Archie logs every delegation and output | None | Full — Archie logs task open, output, and completion |
+| Resumable | Yes — state file survives interruptions | No | No |
+| Output location | `work/AgentOutbox/[id]-[slug]-[date]/` | Chat only | `work/AgentOutbox/[id]-[slug]-[date]/` |
+| Queue support | Yes — oldest-first, numeric prefix for priority | No | No |
+| Reference files | Yes — attach `.xlsx`, `.csv` with same stem | No | Via attachment (remote-control) |
+| Formal task record | Yes — task ID assigned by Archie | No | Yes — task ID assigned by Archie |
+
+Use **inbox files** for any work you want delivered, tracked, and retrievable. Use **direct prompts** for quick questions, team management (hiring or dismissing agents), or one-off instructions. Use **direct prompt → outbox** when you want the full audit trail and file output but don't need queue management — ideal for mobile submissions via remote-control.
 
 ### Submitting Work via Prompt
 
