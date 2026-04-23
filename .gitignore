@@ -5,6 +5,9 @@
 __pycache__/
 *.pyc
 
+# Database
+data/audit.db
+
 # Working directories and files
 .claude/state/current-task.json
 work/AgentOutbox/*
