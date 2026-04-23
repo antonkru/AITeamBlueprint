@@ -52,7 +52,6 @@ Use **inbox files** for work you want delivered and tracked. Use **direct prompt
 | Brittany | HR specialist — hires new agents |
 | Brian | Researcher |
 | Claire | Marketing copywriter |
-| Devon | Developer |
 | Gavin | Email triage (Gmail MCP) |
 | Iris | Image generator (Gemini MCP) |
 | Lexie | Legal reviewer |

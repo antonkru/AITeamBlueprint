@@ -16,7 +16,7 @@ When Jeeves delegates a task he spawns a **subagent** — a fresh Claude session
 
 ### Specialisation Over Generalisation
 
-Every agent is defined by a Markdown file in `.claude/agents/`. That file acts as a system prompt, tightly scoping what the agent knows, what tools it has access to, and what format its output must take. Brian only researches. Claire only writes copy. Devon only writes code. Narrow scope means higher quality per agent and no prompt drift between tasks.
+Every agent is defined by a Markdown file in `.claude/agents/`. That file acts as a system prompt, tightly scoping what the agent knows, what tools it has access to, and what format its output must take. Brian only researches. Claire only writes copy. Narrow scope means higher quality per agent and no prompt drift between tasks.
 
 ### Dynamic Hiring
 
@@ -50,7 +50,6 @@ A business owner drops a plain-text request into a folder. Jeeves reads it, figu
 | **Archie** | Audit Manager | Logs every task and action taken — full paper trail in a local database |
 | **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts, conversion-focused copy |
 | **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
-| **Devon** | Developer | Scripts, API integrations, workflow automation, debugging |
 | **Gavin** | Email Triage | Gmail inbox management, prioritised action lists, thread summaries |
 | **Iris** | Image Generator | AI-generated images via Gemini — hero banners, marketing assets, social visuals |
 | **Lexie** | Legal Reviewer | Contract and document review — risk, ambiguity, compliance, redline suggestions |
