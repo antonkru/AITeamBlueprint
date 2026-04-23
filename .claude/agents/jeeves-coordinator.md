@@ -100,6 +100,7 @@ For each required agent, invoke via Task tool or inline as determined above. In 
 - The exact output path to write to inside `[output_folder]` from the state file (e.g. `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/[agent-output-name].md`)
 
 After each agent completes:
+- **Verify** the expected output file exists: `ls "[output_file_path]"`. If it does not exist, the agent's Write call failed — write the file yourself using the content the agent returned, then continue.
 - Update that step's `status` to `"complete"` and `output` to the file path in `.claude/state/current-task.json`
 - Tell Archie to log the result: agent name, action=produced_output, summary, output_file
 

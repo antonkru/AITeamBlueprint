@@ -44,13 +44,13 @@ A business owner drops a plain-text request into a folder. Jeeves reads it, figu
 
 | Name | Role | What They Do |
 |------|------|-------------|
-| **Jeeves** | Coordinator | Reads your request, assigns work, tracks progress, delivers the final summary |
-| **Brian** | Researcher | Web research, competitor analysis, market research, structured reports |
+| **Jeeves** | Coordinator | (Core member) Reads your request, assigns work, tracks progress, delivers the final summary |
+| **Brian** | Researcher | (Core member) Web research, competitor analysis, market research, structured reports |
+| **Brittany** | HR Agent | (Core member) Hires new specialists on demand, draws from the Skills Library |
 | **Claire** | Marketing Copywriter | Emails, ad copy, landing pages, social media posts |
 | **Maya** | Video Script Writer | Short-form marketing video scripts (TikTok, Reels, YouTube Shorts, LinkedIn) |
-| **Devon** | Developer | Scripts, API integrations, automations, data processing |
+| **Devon** | Developer | Scripts, MCP and API integrations |
 | **Archie** | Audit Manager | Logs every task and action taken — full paper trail in a local database |
-| **Brittany** | HR Agent | Hires new specialists on demand, draws from the Skills Library |
 | *(grows)* | | New specialists hired by Brittany as needed, stay permanently |
 
 ---
@@ -120,10 +120,12 @@ Brittany creates the new agent from the Skills Library. The specialist stays on 
 
 ### Dismissing an Agent
 
+There are several specialist agents in the solution. If you want to start with the core team (Jeeves, Brian and Brittany) and build up your own, ask Jeeves to dismiss the rest.
+
 To remove a specialist from the team, ask Jeeves:
 
 ```
-Dismiss [agent name].
+Dismiss [agent name list].
 ```
 
 Jeeves will remove the agent's definition file from `.claude/agents/`. This is permanent — the agent will need to be rehired if you want them back.
