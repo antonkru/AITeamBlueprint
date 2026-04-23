@@ -35,6 +35,14 @@ CREATE TABLE IF NOT EXISTS agents (
   role TEXT NOT NULL,
   specialty TEXT
 );"
+
+# Seed agents table from .claude/agents/ definitions (INSERT OR IGNORE = skip if already registered)
+for f in .claude/agents/*.md; do
+  name=$(grep -m1 '^name:' "$f" | sed 's/name:[[:space:]]*//')
+  role=$(basename "$f" .md | sed "s/^${name}-//;s/-/ /g")
+  specialty=$(grep -m1 '^description:' "$f" | sed 's/description:[[:space:]]*//' | cut -d'.' -f1 | cut -c1-120)
+  sqlite3 data/audit.db "INSERT OR IGNORE INTO agents (name, role, specialty) VALUES ('${name}', '${role}', '${specialty}');"
+done
 ```
 
 ## Commands You Execute on Request
