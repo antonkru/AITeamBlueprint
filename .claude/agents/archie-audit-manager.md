@@ -29,6 +29,11 @@ CREATE TABLE IF NOT EXISTS interactions (
   action TEXT NOT NULL,
   summary TEXT,
   output_file TEXT
+);
+CREATE TABLE IF NOT EXISTS agents (
+  name TEXT PRIMARY KEY,
+  role TEXT NOT NULL,
+  specialty TEXT
 );"
 ```
 
