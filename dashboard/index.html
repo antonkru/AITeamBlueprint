@@ -484,6 +484,15 @@
       color: var(--text-muted);
       line-height: 1.5;
     }
+
+    .agent-card--lead {
+      border-top-color: var(--accent-glow);
+      margin-bottom: 20px;
+    }
+
+    .agent-card--lead .agent-name {
+      font-size: 20px;
+    }
   </style>
 </head>
 <body>
@@ -533,7 +542,6 @@
 
       <!-- Team Tab -->
       <div class="tab-panel" id="panel-team">
-        <div class="section-title">Team Agents</div>
         <div class="agents-grid" id="agents-grid"></div>
       </div>
     </div>
@@ -759,24 +767,55 @@
       return div;
     }
 
+    function makeAgentCard({ name, role, specialty }, isLead) {
+      const card = document.createElement('div');
+      card.className = 'agent-card' + (isLead ? ' agent-card--lead' : '');
+      card.innerHTML = `
+        <div class="agent-name">${escapeHtml(capitalize(name))}</div>
+        <span class="agent-role">${escapeHtml(role)}</span>
+        <div class="agent-specialty">${escapeHtml(specialty)}</div>
+      `;
+      return card;
+    }
+
     function renderAgents() {
       fetchAgents();
-      const grid = document.getElementById('agents-grid');
+      const panel = document.getElementById('panel-team');
+      const grid  = document.getElementById('agents-grid');
       grid.innerHTML = '';
+
+      // Remove any previously rendered lead section
+      const existing = panel.querySelector('.agent-lead-section');
+      if (existing) existing.remove();
+
       if (!agents.length) {
         grid.innerHTML = '<p class="no-data">No agents found.</p>';
         return;
       }
-      agents.forEach(({ name, role, specialty }) => {
-        const card = document.createElement('div');
-        card.className = 'agent-card';
-        card.innerHTML = `
-          <div class="agent-name">${escapeHtml(name)}</div>
-          <span class="agent-role">${escapeHtml(role)}</span>
-          <div class="agent-specialty">${escapeHtml(specialty)}</div>
-        `;
-        grid.appendChild(card);
-      });
+
+      const leads = agents.filter(a => a.role.toLowerCase().includes('coordinator'));
+      const team  = agents.filter(a => !a.role.toLowerCase().includes('coordinator'));
+
+      if (leads.length) {
+        const section = document.createElement('div');
+        section.className = 'agent-lead-section';
+
+        const heading = document.createElement('div');
+        heading.className = 'section-title';
+        heading.textContent = 'Director';
+        section.appendChild(heading);
+
+        leads.forEach(agent => section.appendChild(makeAgentCard(agent, true)));
+
+        const teamHeading = document.createElement('div');
+        teamHeading.className = 'section-title';
+        teamHeading.textContent = 'Team Agents';
+        section.appendChild(teamHeading);
+
+        panel.insertBefore(section, grid);
+      }
+
+      team.forEach(agent => grid.appendChild(makeAgentCard(agent, false)));
     }
 
     function renderAll() {

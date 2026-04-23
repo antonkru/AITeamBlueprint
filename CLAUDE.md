@@ -19,7 +19,7 @@ See the Team tab in the dashboard for the current roster.
 
 ## Inline vs. Subagent Execution
 
-- **Subagent (Agent tool):** Use for agents whose `tools` frontmatter contains no `mcp__*` entries — e.g. Brian, Devon, Claire, Maya, Brittany, Archie.
+- **Subagent (Agent tool):** Use for agents whose `tools` frontmatter contains no `mcp__*` entries — e.g. Brian, Claire, Maya, Brittany, Archie.
 - **Inline (run directly in this session):** Use for any agent whose `tools` frontmatter includes one or more `mcp__*` tools — e.g. Gavin, any future MCP-dependent agent. Read their definition file and follow their protocol yourself, with full MCP access. This rule applies to all agents, including newly hired ones.
 
 ## Core Mechanic: Dynamic Hiring
