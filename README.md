@@ -81,7 +81,46 @@ Initialise Jeeves:
 use jeeves
 ```
 
-### Submitting Work
+### Two Ways to Submit Work
+
+**Inbox file** and **direct prompt** both reach Jeeves, but they trigger very different behaviour.
+
+| Aspect | Inbox file | Direct prompt |
+|---|---|---|
+| Audit trail | Full — Archie logs every delegation and output | None |
+| Resumable | Yes — state file survives interruptions | No |
+| Output location | `work/AgentOutbox/[id]-[slug]-[date]/` | Chat only |
+| Queue support | Yes — oldest-first, numeric prefix for priority | No |
+| Reference files | Yes — attach `.xlsx`, `.csv` with same stem | No |
+| Formal task record | Yes — task ID assigned by Archie | No |
+
+Use **inbox files** for any work you want delivered, tracked, and retrievable. Use **direct prompts** for quick questions, team management (hiring or dismissing agents), or one-off instructions to Jeeves.
+
+### Submitting Work via Prompt
+
+Type your request directly into the Claude Code session. Jeeves responds conversationally — no task record is opened, no output folder is created, and nothing is written to disk. Use this for quick questions, team management, and one-off instructions.
+
+Examples:
+
+```
+Who is on the team?
+```
+
+```
+Hire a specialist who can analyse financial statements.
+```
+
+```
+Dismiss Maya and Claire.
+```
+
+```
+Research the top 5 project management tools for small teams and give me a summary.
+```
+
+Jeeves may delegate to a specialist under the hood, but the result comes back as chat text rather than a file in `AgentOutbox/`.
+
+### Submitting Work via Inbox
 
 1. Write your request as a `.md` file and drop it into `work/OwnerInbox/`:
 
