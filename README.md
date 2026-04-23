@@ -84,56 +84,24 @@ Initialise Jeeves:
 use jeeves
 ```
 
-#### Remote Session (Mobile)
-
-To control Jeeves from your phone, start a remote-control session on your machine:
-
-```bash
-claude --remote-control
-```
-
-Then open the **Claude mobile app**, tap the **Code** option, and connect to your running session.
-
-You can submit work to Jeeves in three ways from your phone:
-
-**1. Add a task to the inbox**
-Attach a file and ask Jeeves to save it as an inbox task:
-> "Save this as an inbox task — add it to `work/OwnerInbox/`."
-
-Jeeves writes the file to the inbox. Process it later by telling Jeeves to process the inbox.
-
-**2. Process inline (chat response)**
-Attach a file and ask Jeeves to handle it on the spot, returning the result in chat:
-> "Process this now and give me the result here."
-
-No task record is created and nothing is written to disk.
-
-**3. Process inline with outbox output**
-Attach a file and ask Jeeves to handle it and deliver the output to the outbox:
-> "Process this now and write the output to the outbox."
-
-Jeeves opens a task record with Archie, delegates the work, writes output to `work/AgentOutbox/`, and logs everything — same audit trail as an inbox task, just without the queue.
-
-> Available on Pro, Max, Team, and Enterprise plans.
-
 ### Three Ways to Submit Work
 
-**Inbox file**, **direct prompt**, and **direct prompt with outbox output** each trigger different behaviour.
+**Inbox file**, **direct prompt**, and **direct prompt with outbox output** each trigger different behaviour. [Remote prompting via mobile app is supported.](#remote-session-mobile)
 
 | Aspect | Inbox file | Direct prompt | Direct prompt → outbox |
 |---|---|---|---|
-| Audit trail | Full — Archie logs every delegation and output | None | Full — Archie logs task open, output, and completion |
+| Audit trail | Full — Archie logs every delegation and output | Full — Archie logs task open, response, and completion (add `[no-audit]` to skip) | Full — Archie logs task open, output, and completion |
 | Resumable | Yes — state file survives interruptions | No | No |
 | Output location | `work/AgentOutbox/[id]-[slug]-[date]/` | Chat only | `work/AgentOutbox/[id]-[slug]-[date]/` |
 | Queue support | Yes — oldest-first, numeric prefix for priority | No | No |
 | Reference files | Yes — attach `.xlsx`, `.csv` with same stem | No | Via attachment (remote-control) |
-| Formal task record | Yes — task ID assigned by Archie | No | Yes — task ID assigned by Archie |
+| Formal task record | Yes — task ID assigned by Archie | Yes — unless `[no-audit]` | Yes — task ID assigned by Archie |
 
-Use **inbox files** for any work you want delivered, tracked, and retrievable. Use **direct prompts** for quick questions, team management (hiring or dismissing agents), or one-off instructions. Use **direct prompt → outbox** when you want the full audit trail and file output but don't need queue management — ideal for mobile submissions via remote-control.
+Use **inbox files** for any work you want delivered, tracked, and retrievable. Use **direct prompts** for quick questions, team management (hiring or dismissing agents), or one-off instructions — all are audited by default; append `[no-audit]` to skip. Use **direct prompt → outbox** for immediate file output with a full audit trail, without the queue.
 
 ### Submitting Work via Prompt
 
-Type your request directly into the Claude Code session. Jeeves responds conversationally — no task record is opened, no output folder is created, and nothing is written to disk. Use this for quick questions, team management, and one-off instructions.
+Type your request directly into the Claude Code session. Jeeves responds conversationally — the result comes back as chat text rather than a file in `AgentOutbox/`. By default, every direct request opens a task record with Archie so there is a full audit trail. Add `[no-audit]` anywhere in the request to skip auditing — no task record is created and nothing is written to disk.
 
 Examples:
 
@@ -183,6 +151,37 @@ Jeeves may delegate to a specialist under the hood, but the result comes back as
 ### Multiple Requests
 
 Drop multiple `.md` files into `work/OwnerInbox/` and Jeeves processes them one at a time, oldest-first. To reprioritise, prefix a filename with a number (e.g. `001-urgent.md`).
+
+### Remote Session (Mobile)
+
+To control Jeeves from your phone, start a remote-control session on your machine:
+
+```bash
+claude --remote-control
+```
+
+Then open the **Claude mobile app**, tap the **Code** option, and connect to your running session.
+> Only available on Pro, Max, Team, and Enterprise plans.
+
+You can submit work to Jeeves in three ways from your phone:
+
+**1. Process inline (chat response)**
+Attach a file and ask Jeeves to handle it on the spot, returning the result in chat:
+> "Process this now and give me the result here."
+
+Jeeves opens a task record with Archie and logs the interaction even though the result comes back as chat. Add `[no-audit]` to the request to skip auditing entirely — in that case no task record is created and nothing is written to disk.
+
+**2. Add a task to the inbox**
+Attach a file and ask Jeeves to save it as an inbox task:
+> "Save this as an inbox task — add it to `work/OwnerInbox/`."
+
+Jeeves writes the file to the inbox. Process it later by telling Jeeves to process the inbox.
+
+**3. Process inline with outbox output**
+Attach a file and ask Jeeves to handle it and deliver the output to the outbox:
+> "Process this now and write the output to the outbox."
+
+Jeeves opens a task record with Archie, delegates the work, writes output to `work/AgentOutbox/`, and logs everything — same audit trail as an inbox task, just without the queue.
 
 ---
 
