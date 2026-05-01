@@ -14,7 +14,6 @@
       "Bash(mkdir -p C:/develop/Repos/AITeamBlueprint/data)",
       "Bash(sqlite3 data/audit.db ' *)",
       "Bash(sqlite3 *)",
-      "Bash(claude --model claude-sonnet-4-6 -p \"You are Archie. Initialise the database if needed, then open a new task. Prompt summary: Write a marketing email for a new AI productivity tool aimed at small business owners. Files: work/OwnerInbox/prompt.md. Return the task_id.\" --allowedTools \"Bash,Read\")",
       "Bash(mkdir -p work/OwnerInbox/done)",
       "Bash(mkdir -p .claude/state)",
       "Bash(mv work/OwnerInbox/* work/OwnerInbox/done/*)",

@@ -1,6 +1,6 @@
 # AITeamBlueprint
 
-A ready-made AI agent team for small business owners. Drop a request into an inbox folder — a coordinator named Jeeves reads it, delegates to the right specialists, and delivers finished work to an output folder. If the team lacks a skill, it hires a new specialist automatically.
+A ready-made AI agent team. Drop a request into an inbox folder — a coordinator named Jeeves reads it, delegates to the right specialists, and delivers finished work to an output folder. If the team lacks a skill, it hires a new specialist automatically.
 
 ---
 
