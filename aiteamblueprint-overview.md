@@ -1,6 +1,6 @@
 # AITeamBlueprint — Overview
 
-**AITeamBlueprint** is a ready-made AI agent team built for small business owners, running on top of Claude Code's native multi-agent architecture.
+**AITeamBlueprint** is a ready-made AI agent team, running on top of Claude Code's native multi-agent architecture.
 
 ---
 
