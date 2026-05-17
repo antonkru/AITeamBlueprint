@@ -9,7 +9,6 @@ __pycache__/
 data/audit.db
 
 # Working directories and files
-.claude/state/current-task.json
 work/AgentOutbox/*
 !work/AgentOutbox/sample-agent-output.md
 work/OwnerInbox/*

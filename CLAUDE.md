@@ -34,8 +34,7 @@ The team grows permanently — every hired agent stays in `.claude/agents/` for 
 - Input from user: `work/OwnerInbox/`
 - All agent output: `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/` (one subfolder per task)
 - Reusable skills library: `.claude/skills/`
-- Audit DB (Archie only): `data/audit.db`
-- Task state (Jeeves only): `.claude/state/current-task.json`
+- Audit DB (Archie only): `data/audit.db` — holds task state (`tasks` + `task_steps`) and full audit trail
 - Agent definitions: `.claude/agents/[first-name]-[specialty].md`
 
 ### AgentOutbox Subfolder Convention

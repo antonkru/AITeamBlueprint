@@ -22,8 +22,8 @@ When the user sends a request directly — via conversation, remote-control atta
 
 **Without `[no-audit]` (default — applies to all direct request types):**
 
-1. **Open a task record via Archie** — same as Step 3 of the Full Workflow.
-2. **[Outbox requests only] Create the output folder** — derive slug from the request; create `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/`.
+1. **Open a task record via Archie** — same as Step 3 of the Full Workflow. Derive a slug from the request. Pass `prompt_file=NULL` (there is no inbox file). Archie computes and stores `output_folder` automatically; you may ignore it for chat-only requests.
+2. **[Outbox requests only] Create the output folder** — `mkdir -p "[output_folder returned by Archie]"`.
 3. **Process inline or delegate** — determine execution mode per Step 7 rules.
 4. **Write output** — to the outbox folder (outbox requests) or respond in chat (chat-only requests).
 5. **Log the output with Archie** — agent name, action=produced_output, summary, output_file (use NULL for chat-only responses).
@@ -39,7 +39,7 @@ When the user sends a request directly — via conversation, remote-control atta
 Run `ToolSearch` with query `"select:Task"` to load the Task tool schema before invoking any agent.
 
 ### Step 1 — Check for In-Progress Task
-Read `.claude/state/current-task.json`. If it exists, resume from the first step where `status` is `"pending"` — skip steps that are already `"complete"`. If it does not exist, proceed to Step 2.
+Invoke Archie via Task tool: "Return the current in-progress task state." Archie returns either "No in-progress task." or a structured block with the active task row, its `task_steps`, and the agents hired during it. If there is no in-progress task, proceed to Step 2. Otherwise resume from the first step where `status='pending'` — skip steps already `complete`. Use the `output_folder` from the task row when delegating in Step 7.
 
 ### Step 2 — Pick the Next Prompt
 
@@ -51,42 +51,30 @@ ls -tr work/OwnerInbox/*.md 2>/dev/null | grep -v '/done/' | head -1
 - If a file is returned: that is `[prompt-file]`. Derive its stem (filename without `.md` extension). Glob `work/OwnerInbox/[stem]*.*` and collect any matches that are **not** `.md` files — these are the associated reference files. Read the prompt and all reference files. Understand the full request before proceeding.
 
 ### Step 3 — Open a Task Record (via Archie)
-Invoke Archie via Task tool:
-> "Initialise the database. Open a new task. Prompt summary: [one sentence]. Files: [comma-separated list]. Return the task_id."
-
-Store the returned task_id for all subsequent Archie calls.
-
-### Step 4 — Write State File
 
 Derive the task slug: 3–5 words from the prompt summary, lowercased, joined with hyphens (e.g. `write-marketing-email`).
-Compose the output folder path: `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/`
+
+Invoke Archie via Task tool:
+> "Initialise the database. Open a new task. Prompt summary: [one sentence]. Files: [comma-separated list of input files]. task_slug: [slug]. prompt_file: `work/OwnerInbox/[prompt-file]` (or NULL for direct chat requests). Return the task_id and computed output_folder."
+
+Archie computes and stores `output_folder` automatically as `work/AgentOutbox/[id]-[slug]-[YYYY-MM-DD]`. Store the returned `task_id` and `output_folder` for all subsequent steps.
+
+### Step 4 — Create Output Folder
 
 ```bash
-mkdir -p .claude/state
-mkdir -p "work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]"
+mkdir -p "[output_folder]"
 ```
 
-Write `.claude/state/current-task.json`:
-```json
-{
-  "task_id": 0,
-  "task_slug": "[task-slug]",
-  "output_folder": "work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]",
-  "prompt_file": "work/OwnerInbox/[prompt-file]",
-  "prompt": "[one-sentence summary]",
-  "input_files": ["work/OwnerInbox/[prompt-file]", "work/OwnerInbox/[ref1]", "..."],
-  "steps": [
-    { "agent": "[name]", "status": "pending", "output": null }
-  ],
-  "hired_this_session": []
-}
-```
+Task state lives entirely in `data/audit.db` — the `tasks` row (with `task_slug`, `output_folder`, `prompt_file`), the `task_steps` table (per-agent status and output), and the `interactions` table (hires logged as `action='hired_agent'`). To read any of this, ask Archie: "Return the current in-progress task state." Per-agent `task_steps` rows are registered as agents are identified (Step 5) or hired (Step 6).
 
 ### Step 5 — Check Existing Agents
 ```bash
 ls .claude/agents/
 ```
 Read the `description` frontmatter of each `.md` file. Determine which agent(s) can handle the task. An agent is a match only if its description directly covers the required work.
+
+For each matched agent (in execution order), tell Archie:
+> "Add step: task_id=[id], sequence=N, agent=[name]."
 
 ### Step 6 — Hire if No Match Found
 Invoke Brittany via Task tool with a structured brief:
@@ -103,8 +91,9 @@ Invoke Brittany via Task tool with a structured brief:
 After Brittany confirms the hire, tell Archie to:
 1. Register the new agent: `"Register agent: name=[name], role=[role title], specialty=[one-line specialty description]."`
 2. Log the interaction: `"Log interaction: task_id=[id], agent=brittany, action=hired_agent, summary='Hired [name] as [role].'"`
+3. Add the workflow step: `"Add step: task_id=[id], sequence=N, agent=[name]."`
 
-Update `.claude/state/current-task.json`: add the new agent to `steps`, add name to `hired_this_session`.
+The `hired_agent` interaction is the canonical record of session hires — there is no separate `hired_this_session` list to maintain.
 
 ### Step 7 — Delegate to Specialist(s)
 
@@ -114,11 +103,11 @@ Read the agent's `tools` frontmatter. If any tool name starts with `mcp__`, the 
 For each required agent, invoke via Task tool or inline as determined above. In the prompt (or inline execution), specify:
 - The exact task to perform
 - Which file(s) to read from `work/OwnerInbox/`
-- The exact output path to write to inside `[output_folder]` from the state file (e.g. `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/[agent-output-name].md`)
+- The exact output path to write to inside `[output_folder]` (e.g. `work/AgentOutbox/[task-id]-[task-slug]-[YYYY-MM-DD]/[agent-output-name].md`). Read `[output_folder]` either from the Step 3 return value (fresh task) or from the Step 1 Archie state query (resumed task).
 
 After each agent completes:
 - **Verify** the expected output file exists: `ls "[output_file_path]"`. If it does not exist, the agent's Write call failed — write the file yourself using the content the agent returned, then continue.
-- Update that step's `status` to `"complete"` and `output` to the file path in `.claude/state/current-task.json`
+- Tell Archie: `"Complete step: task_id=[id], agent=[name], output_file=[path]."`
 - Tell Archie to log the result: agent name, action=produced_output, summary, output_file
 
 ### Step 8 — Synthesise and Write Summary
@@ -145,8 +134,7 @@ for ref in work/OwnerInbox/${STEM}*.*; do
 done
 ```
 
-Tell Archie: "Mark task [id] complete."
-Delete `.claude/state/current-task.json`.
+Tell Archie: "Mark task [id] complete." The task row's status flips to `complete` and the in-progress query in Step 1 naturally excludes it from now on. The `task_steps` rows remain as history.
 
 ### Step 10 — Continue Queue
 ```bash
