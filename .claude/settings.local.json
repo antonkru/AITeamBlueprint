@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "defaultMode": "auto",
+    "defaultMode": "bypassPermissions",
     "allow": [
       "WebFetch(domain:www.youtube.com)",
       "WebFetch(domain:youtubetranscript.com)",
@@ -15,8 +15,8 @@
       "Bash(mkdir -p C:/develop/Repos/AITeamBlueprint/data)",
       "Bash(sqlite3 data/audit.db ' *)",
       "Bash(sqlite3 *)",
+      "Bash(sqlite3 data/audit.db *)",
       "Bash(mkdir -p work/OwnerInbox/done)",
-      "Bash(mkdir -p .claude/state)",
       "Bash(mv work/OwnerInbox/* work/OwnerInbox/done/*)",
       "Bash(ls *)",
       "Bash(ls -tr *)",
@@ -26,9 +26,6 @@
       "Edit(.claude/agents/*)",
       "Write(.claude/skills/*)",
       "Edit(.claude/skills/*)",
-      "Read(.claude/state/*)",
-      "Write(.claude/state/*)",
-      "Edit(.claude/state/*)",
       "Bash(ToolSearch)",
       "mcp__claude_ai_Gmail__search_threads",
       "mcp__claude_ai_Gmail__get_thread",
@@ -36,8 +33,7 @@
       "mcp__claude_ai_Google_Calendar__list_calendars",
       "Bash(git push *)",
       "Bash(grep -v '\\\\.md$')",
-      "mcp__gemini-image__generate_image",
-      "Bash(git -C /workspaces/AITeamBlueprint log --oneline -5)"
+      "mcp__gemini-image__generate_image"
     ]
   }
 }

@@ -91,7 +91,7 @@ use jeeves
 | Aspect | Inbox file | Direct prompt | Direct prompt → outbox |
 |---|---|---|---|
 | Audit trail | Full — Archie logs every delegation and output | Full — Archie logs task open, response, and completion (add `[no-audit]` to skip) | Full — Archie logs task open, output, and completion |
-| Resumable | Yes — state file survives interruptions | No | No |
+| Resumable | Yes — task state persists in the audit DB and survives interruptions | No | No |
 | Output location | `work/AgentOutbox/[id]-[slug]-[date]/` | Chat only | `work/AgentOutbox/[id]-[slug]-[date]/` |
 | Queue support | Yes — oldest-first, numeric prefix for priority | No | No |
 | Reference files | Yes — attach `.xlsx`, `.csv` with same stem | No | Via attachment (remote-control) |
@@ -254,10 +254,9 @@ work/
 .claude/
   agents/              ← One .md file per team member
   skills/              ← Reusable skill modules for new hires
-  state/               ← Current task state (managed by Jeeves)
 
 data/
-  audit.db             ← Full task and action log (managed by Archie)
+  audit.db             ← Task state + full action log (managed by Archie)
 ```
 
 ---
